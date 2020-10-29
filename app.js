@@ -7,6 +7,7 @@ const fs = require("fs");
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
+const templatesDir = path.resolve(__dirname, "templates");
 
 const render = require("./lib/htmlRenderer");
 
@@ -16,16 +17,11 @@ const { managerQuestions, engineerQuestions, internQuestions, employeeQuestions 
 
 // Additional Package Requirements
 const util = require("util");
-// const readFileAsync = util.promisify(fs.readFile);
 const writeFileAsync = util.promisify(fs.writeFile);
+const copyFileAsync = util.promisify(fs.copyFile);
+const ora = require("ora");
 
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
-
-// HINT: each employee type (manager, engineer, or intern) has slightly different
-// information; write your code to ask different questions via inquirer depending on
-// employee type.
-
+// Function to create new employee types
 const addNew = (which, type) => {
 
     console.log("");
@@ -57,6 +53,7 @@ const addNew = (which, type) => {
         });
 }
 
+// Function to add an employee, prompt for type
 const addEmployee = () => {
 
     console.log("");
@@ -85,41 +82,46 @@ const addEmployee = () => {
         });
 }
 
-// After the user has input all employees desired, call the `render` function (required
-// above) and pass in an array containing all employee objects; the `render` function will
-// generate and return a block of HTML including templated divs for each employee!
-
+// Create team.html function
 const createTeam = () => {
+
+    console.log("");
+    const throbber = ora('Generating team...').start();
 
     let renderHTML = render(employees);
 
-    // Check if 
+    // Check if output directory exists
     if (!fs.existsSync(OUTPUT_DIR)){
         fs.mkdirSync(OUTPUT_DIR);
     }
 
-    writeFileAsync(outputPath, renderHTML).then(function (error) {
+    // Copy across the style sheet
+    copyFileAsync(templatesDir + "/style.css", OUTPUT_DIR + "/style.css").then(function (error) {
 
         if (error) return console.log(error);
-
+        
         console.log("");
-        console.log("Congratulations, your team has been created!");
-        console.log(`--> Open file: ${outputPath}`)
-    });
+        console.log("--> Copied style.css");
+
+        // Write the file to the output path
+        writeFileAsync(outputPath, renderHTML).then(function (error) {
+    
+            if (error) return console.log(error);
+    
+            console.log("--> Generating team.html")
+            console.log("");
+            console.log("Congratulations, your team has been created!");
+            console.log(`--> Open file: ${outputPath}`)
+
+            throbber.stop();
+        });
+    })
 }
 
-// After you have your html, you're now ready to create an HTML file using the HTML
-// returned from the `render` function. Now write it to a file named `team.html` in the
-// `output` folder. You can use the variable `outputPath` above target this location.
-// Hint: you may need to check if the `output` folder exists and create it if it
-// does not.
-
+// Initialisation function
 const init = () => {
 
     console.clear();
-
-    console.log("OUTPUT_DIR: "+OUTPUT_DIR);
-    console.log("outputPath: "+outputPath);
 
     console.log("\n////////////////////\n// TEAM GENERATOR //\n////////////////////\n");
     console.log("Please answer the following questions to complete your TEAM:");
