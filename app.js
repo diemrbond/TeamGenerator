@@ -10,9 +10,54 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+// Additional Package Requirements
+const logSymbols = require('log-symbols');
+const axios = require("axios");
+const ora = require("ora");
+const { managerQuestions, engineerQuestions, internQuestions, employeeQuestions } = require("./lib/questions");
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
+
+const addManager = () => {
+    
+    inquirer
+        .prompt(managerQuestions)
+        .then(function (response) {
+            
+            console.log(response);            
+        });
+}
+
+const addEngineer = () => {
+    
+    inquirer
+        .prompt(engineerQuestions)
+        .then(function (response) {
+            
+            console.log(response);            
+        });
+}
+
+const addIntern = () => {
+    
+    inquirer
+        .prompt(internQuestions)
+        .then(function (response) {
+            
+            console.log(response);            
+        });
+}
+
+const addEmployee = () => {
+
+    inquirer
+        .prompt(employeeQuestions)
+        .then(function (response) {
+            
+            console.log(response);            
+        });
+}
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
