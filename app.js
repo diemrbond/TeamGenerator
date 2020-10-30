@@ -13,7 +13,7 @@ const render = require("./lib/htmlRenderer");
 
 // Constants and Variables
 const employees = [];
-const { managerQuestions, engineerQuestions, internQuestions, employeeQuestions } = require("./lib/questions");
+const { managerQuestions, engineerQuestions, internQuestions, employeeQuestions, getGithubAvatar } = require("./lib/questions");
 
 // Additional Package Requirements
 const util = require("util");
@@ -40,6 +40,7 @@ const addNew = (which, type) => {
 
                 case "Engineer":
                     employee = new Engineer(response.name, response.id, response.email, response.github);
+                    employee.url = getGithubAvatar();
                     employees.push(employee);
                     break;
 

@@ -42,6 +42,10 @@ h3 {
     margin-bottom: 0;
 }
 
+.card-header {
+    text-align: center;
+}
+
 .icon {
     width: 100%;
     margin-top: 10px;
