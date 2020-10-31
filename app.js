@@ -65,15 +65,15 @@ const addEmployee = () => {
 
             switch (response.type) {
                 case "Manager":
-                    addNew(managerQuestions, response.type);
+                    addNew([...managerQuestions], response.type);
                     break;
 
                 case "Engineer":
-                    addNew(engineerQuestions, response.type);
+                    addNew([...engineerQuestions], response.type);
                     break;
 
                 case "Intern":
-                    addNew(internQuestions, response.type);
+                    addNew([...internQuestions], response.type);
                     break;
 
                 default:
@@ -85,14 +85,14 @@ const addEmployee = () => {
 
 // Create team.html function
 const createTeam = () => {
-
+    console.log("Employees: " + employees);
     console.log("");
     const throbber = ora('Generating team...').start();
 
     let renderHTML = render(employees);
 
     // Check if output directory exists
-    if (!fs.existsSync(OUTPUT_DIR)){
+    if (!fs.existsSync(OUTPUT_DIR)) {
         fs.mkdirSync(OUTPUT_DIR);
     }
 
@@ -100,15 +100,15 @@ const createTeam = () => {
     copyFileAsync(templatesDir + "/style.css", OUTPUT_DIR + "/style.css").then(function (error) {
 
         if (error) return console.log(error);
-        
+
         console.log("");
         console.log("--> Copied style.css");
 
         // Write the file to the output path
         writeFileAsync(outputPath, renderHTML).then(function (error) {
-    
+
             if (error) return console.log(error);
-    
+
             console.log("--> Generating team.html")
             console.log("");
             console.log("Congratulations, your team has been created!");
