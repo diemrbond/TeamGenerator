@@ -4,6 +4,7 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
+const axios = require("axios");
 
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
@@ -11,9 +12,42 @@ const templatesDir = path.resolve(__dirname, "templates");
 
 const render = require("./lib/htmlRenderer");
 
+async function verifyGithub(input,which) {
+    // API to search Github for the entered github name
+    const queryUrl = `https://api.github.com/search/users?q=${input}`;
+
+    // Call using Axios to Github
+    response = await axios.get(queryUrl).then(function (res) {
+
+        // Check there is at least 1 user that matches
+        let totalResults = res.data.total_count;
+        let loginName;
+
+        // Check there is at least 1 result
+        if (totalResults > 0) {
+            loginName = res.data.items[0].login;
+        }
+
+        // If the user login is an exact match
+        if ((totalResults > 0) && (loginName === input)) {
+
+            let github_avatar = res.data.items[0].avatar_url;
+            employees[which].url = github_avatar;
+
+            // Return true back to promise                      
+            return true;
+        }
+
+        // Return error back to promise
+        return false;
+    });
+
+    return response;
+}
+
 // Constants and Variables
 const employees = [];
-const { managerQuestions, engineerQuestions, internQuestions, employeeQuestions, getGithubAvatar } = require("./lib/questions");
+const { managerQuestions, engineerQuestions, internQuestions, employeeQuestions } = require("./lib/questions");
 
 // Additional Package Requirements
 const util = require("util");
@@ -40,7 +74,7 @@ const addNew = (which, type) => {
 
                 case "Engineer":
                     employee = new Engineer(response.name, response.id, response.email, response.github);
-                    employee.url = getGithubAvatar();
+                    verifyGithub(response.github,employees.length);
                     employees.push(employee);
                     break;
 
