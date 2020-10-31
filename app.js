@@ -1,3 +1,4 @@
+// Requirements
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
@@ -5,14 +6,27 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 const axios = require("axios");
+const render = require("./lib/htmlRenderer");
 
+// Output paths
 const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 const templatesDir = path.resolve(__dirname, "templates");
+const imageDir = path.resolve(__dirname, "assets", "img");
 
-const render = require("./lib/htmlRenderer");
+// Constants and Variables
+const employees = [];
+const { managerQuestions, engineerQuestions, internQuestions, employeeQuestions } = require("./lib/questions");
 
-async function verifyGithub(input,which) {
+// Additional Package Requirements
+const util = require("util");
+const writeFileAsync = util.promisify(fs.writeFile);
+const copyFileAsync = util.promisify(fs.copyFile);
+const ora = require("ora");
+
+// Function to verify github account, and if exists retrieve avatar
+async function verifyGithub(input, which) {
+
     // API to search Github for the entered github name
     const queryUrl = `https://api.github.com/search/users?q=${input}`;
 
@@ -31,6 +45,7 @@ async function verifyGithub(input,which) {
         // If the user login is an exact match
         if ((totalResults > 0) && (loginName === input)) {
 
+            // Assign the avatar
             let github_avatar = res.data.items[0].avatar_url;
             employees[which].url = github_avatar;
 
@@ -44,16 +59,6 @@ async function verifyGithub(input,which) {
 
     return response;
 }
-
-// Constants and Variables
-const employees = [];
-const { managerQuestions, engineerQuestions, internQuestions, employeeQuestions } = require("./lib/questions");
-
-// Additional Package Requirements
-const util = require("util");
-const writeFileAsync = util.promisify(fs.writeFile);
-const copyFileAsync = util.promisify(fs.copyFile);
-const ora = require("ora");
 
 // Function to create new employee types
 const addNew = (which, type) => {
@@ -74,7 +79,7 @@ const addNew = (which, type) => {
 
                 case "Engineer":
                     employee = new Engineer(response.name, response.id, response.email, response.github);
-                    verifyGithub(response.github,employees.length);
+                    verifyGithub(response.github, employees.length);
                     employees.push(employee);
                     break;
 
@@ -119,10 +124,12 @@ const addEmployee = () => {
 
 // Create team.html function
 const createTeam = () => {
-    console.log("Employees: " + employees);
+
     console.log("");
+
     const throbber = ora('Generating team...').start();
 
+    // Create the HTML
     let renderHTML = render(employees);
 
     // Check if output directory exists
@@ -137,6 +144,15 @@ const createTeam = () => {
 
         console.log("");
         console.log("--> Copied style.css");
+
+        // Copy across all required images
+        const files = ['\\coding.svg', '\\graduate.svg', '\\manager.svg'];
+        files.forEach(file => {
+            copyFileAsync(imageDir + file, OUTPUT_DIR + file).then(function (error) {
+                if (error) return console.log(error);
+                console.log(`--> Copied ${file}`);
+            })
+        });
 
         // Write the file to the output path
         writeFileAsync(outputPath, renderHTML).then(function (error) {
