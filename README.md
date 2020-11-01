@@ -3,8 +3,18 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Description 
-  This app will allow you to create a team member summary page, just by answering some simple question prompts.
+  This app will allow you to create a team member summary page, just by answering some simple question prompts. Using the inquirer package, you can setup your team quickly and easily. The app will verify the email address are valid via API call, and will check if the github account exists and retrieve the Avatar for Engineers. 
 
+  Package requirements:
+  1. Inquirer
+  2. Jest
+  3. Axios
+  4. Email-verifier
+  5. Log-symbols
+  6. Ora
+  7. Util
+
+ 
 
   <img src="assets/img/Screenshot.jpg" width="600" /> <br>
 
