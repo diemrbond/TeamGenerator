@@ -99,4 +99,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   Email: [mrbondmustdie@gmail.com](mailto:mrbondmustdie@gmail.com)
 
   ---
-  © 2020 Andrew Kelleher | diemrbond.github.io
+  © 2020 Andrew Kelleher | http://diemrbond.github.io 
